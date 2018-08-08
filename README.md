@@ -3,7 +3,7 @@
 ## R
 Contains all the code to visualise and analise the kinect skelleton data in R.
 - function drawCanvas(): draw an empty canvas with the IVE 
-* alpha: rotation in degrees of the IVE
+** alpha: rotation in degrees of the IVE
 - function printSkeleton(): draw a skeleton given a kinect skeleton data as input
 * string file: path to the kinect data file
 * string color: color
