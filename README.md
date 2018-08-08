@@ -1,7 +1,7 @@
 # KinectEMS
 
 ## R
-![R-screenshot](https://i.imgur.com/jYqMpbd.png "Logo Title Text 1")
+![R-screenshot](https://i.imgur.com/jYqMpbd.png | width=100)) 
 
 Contains all the code to visualise and analise the kinect skelleton data in R.
 * function drawCanvas(): draw an empty canvas with the IVE 
@@ -15,7 +15,7 @@ Contains all the code to visualise and analise the kinect skelleton data in R.
   * string output: path to where the average skeleton data file will be saved ([example](https://github.com/snavas/KinectEMS/blob/master/R/output/test.txt))
 
 ## BodyBasics-WPF
-![C-screenshoot](https://i.imgur.com/ipETGWA.png "Logo Title Text 1")
+![C-screenshoot](https://i.imgur.com/ipETGWA.png | width=100)) 
 
 C# app. 
  - Recieve and visualise skeleton data from the Kinect stream (Physical kinect or Kinect Studio)
