@@ -1,7 +1,9 @@
 # KinectEMS
 
 ## R
-![R-screenshot](https://i.imgur.com/jYqMpbd.png | width=100)) 
+![R-screenshot](https://i.imgur.com/jYqMpbd.png){:height="50%" width="50%"}
+
+{:height="50%" width="50%"}
 
 Contains all the code to visualise and analise the kinect skelleton data in R.
 * function drawCanvas(): draw an empty canvas with the IVE 
