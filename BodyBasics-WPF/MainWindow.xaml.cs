@@ -23,6 +23,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
     using Microsoft.Kinect;
     using Windows.Devices.Bluetooth;
     using Windows.Devices.Enumeration;
+    using System.IO.Ports;
 
     /// <summary>
     /// Interaction logic for MainWindow
@@ -667,15 +668,27 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         /////////////////////////////////////////////////////////////////////////////////
         /// EMS PART + Button Events
         /////////////////////////////////////////////////////////////////////////////////
+        // SERIAL (USB) PORT
+        private string sPort = "COM4";
+        private int baudrate = 19200;
+        private void SendUSBMessage(string message)
+        {
+            SerialPort port = new SerialPort(sPort, baudrate);
+            port.Open();
+            port.Write(message);
+            port.Close();
+        }
+        
         // UDP IP
         const string ipAddress = "192.168.43.1"; // Android Hotspot ip
-        const int port = 5000;
+        const int port = 5005;
         private long delay1 = 200;
         private long lastMessage1 = 0;
-        private long intensity1 = 1000;
+        private long intensity1 = 100;
         private long delay2 = 200;
         private long lastMessage2 = 0;
-        private long intensity2 = 1000;
+        private long intensity2 = 100;
+        private long time = 2000;
 
         private void SendUDPMessage(string message)
         {
@@ -695,9 +708,10 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         private async void sendBLEMessage(string message)
         {
             BluetoothLEDevice bluetoothLEDevice = null;
-   
+
+            // Not working, deviceInformationCollection.Count = 0. 0 devices discovered
             DeviceInformationCollection deviceInformationCollection = await DeviceInformation.FindAllAsync(BluetoothLEDevice.GetDeviceSelector());
-            Console.WriteLine(deviceInformationCollection.Count);
+            Console.WriteLine($"Detected [{deviceInformationCollection.Count}] BLE devices");
 
             //var address = new BluetoothAddressType();
             //var dev = await BluetoothLEDevice.FromBluetoothAddressAsync(address);
@@ -719,14 +733,15 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         }
 
         // Buttons
-        private float iMax = 99999999999999;
+        private float iMax = 100;
 
         private void EMS1C1Plus(object sender, RoutedEventArgs e)
         {
             if ((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) > lastMessage1 + delay1) {
-                if (intensity1+50 < iMax) { 
-                    intensity1 += 50;
-                    SendUDPMessage("EMS09RH" + "C1" + "I" + intensity1 + "T250");
+                if (intensity1+5 < iMax) { 
+                    intensity1 += 5;
+                    //SendUDPMessage("EMS09RH" + "C1" + "I" + intensity1 + "T" + time + "G");
+                    SendUSBMessage("C0" + "I" + intensity1 + "T" + time + "G");
                     lastMessage1 = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond);
                     Console.WriteLine("[EMS1C1+] Increasing Intensity of EMS Module 1 Channel 1 to: "+intensity1);
                     //sendBLEMessage("meh.");
@@ -739,9 +754,10 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         private void EMS1C1Minus(object sender, RoutedEventArgs e)
         {
             if ((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) > lastMessage1 + delay1) {
-                if (intensity1-50 > 0) { 
-                    intensity1 -= 50;
-                    SendUDPMessage("EMS09RH" + "C1" + "I" + intensity1 + "T250");
+                if (intensity1-5 > 0) { 
+                    intensity1 -= 5;
+                    //SendUDPMessage("EMS09RH" + "C1" + "I" + intensity1 + "T" + time + "G");
+                    SendUSBMessage("C0" + "I" + intensity1 + "T" + time + "G");
                     lastMessage1 = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond);
                     Console.WriteLine("[EMS1C1-] Decreasing Intensity of EMS Module 1 Channel 1 to: " + intensity1);
                 }
@@ -753,14 +769,38 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
         private void EMS1C2Plus(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("[EMS1C2+] Increasing (+) Intensity of EMS Module 1 Channel 2");
+            if ((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) > lastMessage1 + delay1) {
+                if (intensity1 + 5 < iMax) {
+                    intensity1 += 5;
+                    //SendUDPMessage("EMS09RH" + "C2" + "I" + intensity1 + "T" + time + "G");
+                    SendUSBMessage("C1" + "I" + intensity1 + "T" + time + "G");
+                    lastMessage1 = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond);
+                    Console.WriteLine("[EMS1C2+] Increasing (+) Intensity of EMS Module 1 Channel 2 to: " + intensity1);
+                }
+            }
+            else {
+                Console.WriteLine("[EMS1C2+] ERR waiting for delay);");
+            }
         }
 
         private void EMS1C2Minus(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("[EMS1C2-] Decreasing (-) Intensity of EMS Module 1 Channel 2");
+            if ((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) > lastMessage1 + delay1)
+            {
+                if (intensity1 - 5 > 0) {
+                    intensity1 -= 5;
+                    //SendUDPMessage("EMS09RH" + "C2" + "I" + intensity1 + "T" + time + "G");
+                    SendUSBMessage("C1" + "I" + intensity1 + "T" + time + "G");
+                    lastMessage1 = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond);
+                    Console.WriteLine("[EMS1C2-] Decreasing (-) Intensity of EMS Module 1 Channel 2 to: " + intensity1);
+                }
+            }
+            else { 
+                Console.WriteLine("[EMS1C2-] ERR waiting for delay);");
+            }
         }
 
+        // Second EMS Machine
         private void EMS2C1Plus(object sender, RoutedEventArgs e)
         {
             Console.WriteLine("[EMS2C1+] Increasing (+) Intensity of EMS Module 2 Channel 1");
