@@ -669,7 +669,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         /// EMS PART + Button Events
         /////////////////////////////////////////////////////////////////////////////////
         // SERIAL (USB) PORT
-        private string sPort = "COM4";
+        private string sPort = "COM8";
         private int baudrate = 19200;
         private void SendUSBMessage(string message)
         {
@@ -741,7 +741,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 if (intensity1+5 < iMax) { 
                     intensity1 += 5;
                     //SendUDPMessage("EMS09RH" + "C1" + "I" + intensity1 + "T" + time + "G");
-                    SendUSBMessage("C0" + "I" + intensity1 + "T" + time + "G");
+                    SendUSBMessage("C0" + "I" + intensity1 + "T" + time + "GS");
                     lastMessage1 = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond);
                     Console.WriteLine("[EMS1C1+] Increasing Intensity of EMS Module 1 Channel 1 to: "+intensity1);
                     //sendBLEMessage("meh.");
