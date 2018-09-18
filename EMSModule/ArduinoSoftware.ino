@@ -132,7 +132,7 @@ void loop() {
 				doCommand(c);
 			} else {
 				String a = "";
-				a = Serial.readStringUntil('\n');
+				a = Serial.readStringUntil('S');
 				// DEBUG TO TEST HOW MUCH TIME DOES IT TAKES
 				//long time = millis();
 				emsSystem.doCommand(& a);

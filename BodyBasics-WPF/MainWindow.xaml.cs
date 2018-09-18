@@ -21,8 +21,8 @@ namespace Microsoft.Samples.Kinect.BodyBasics
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
     using Microsoft.Kinect;
-    using Windows.Devices.Bluetooth;
-    using Windows.Devices.Enumeration;
+    //using Windows.Devices.Bluetooth;
+    //using Windows.Devices.Enumeration;
     using System.IO.Ports;
 
     /// <summary>
@@ -669,13 +669,16 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         /// EMS PART + Button Events
         /////////////////////////////////////////////////////////////////////////////////
         // SERIAL (USB) PORT
-        private string sPort = "COM8";
+        //private string sPort = "COM8";
         private int baudrate = 19200;
-        private void SendUSBMessage(string message)
+        private void SendUSBMessage(string message, string sPort)
         {
+            //byte[] data = Encoding.Default.GetBytes(message);
             SerialPort port = new SerialPort(sPort, baudrate);
             port.Open();
-            port.Write(message);
+            //port.Write(message);
+            port.WriteLine(message);
+            //port.Write(data, 0, data.Length);
             port.Close();
         }
         
@@ -705,6 +708,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         const string BLUETOOTH_LE_SERVICE_UUID = "454D532D-5374-6575-6572-756E672D4348"; //the service the different characteristics
         const string BLUETOOTH_LE_CHARACTERISTIC_UUID = "c7e70012-c847-11e6-8175-8c89a55d403c"; //the characteristic that allows subscription to notification
 
+        /*
         private async void sendBLEMessage(string message)
         {
             BluetoothLEDevice bluetoothLEDevice = null;
@@ -731,17 +735,25 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 }
             }
         }
+        */
 
         // Buttons
         private float iMax = 100;
+        private string EMS1 = "COM8";
+        private string EMS2 = "COM8";
 
+        // EMS MACHINE 1
         private void EMS1C1Plus(object sender, RoutedEventArgs e)
         {
+            //TimeSpan date = DateTime.Now.TimeOfDay;
+            //SendUSBMessage("C0I100T2000GS", "COM8");
+            //Console.WriteLine(date - DateTime.Now.TimeOfDay);
+            
             if ((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) > lastMessage1 + delay1) {
                 if (intensity1+5 < iMax) { 
                     intensity1 += 5;
                     //SendUDPMessage("EMS09RH" + "C1" + "I" + intensity1 + "T" + time + "G");
-                    SendUSBMessage("C0" + "I" + intensity1 + "T" + time + "GS");
+                    SendUSBMessage("C0" + "I" + intensity1 + "T" + time + "G", EMS1);
                     lastMessage1 = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond);
                     Console.WriteLine("[EMS1C1+] Increasing Intensity of EMS Module 1 Channel 1 to: "+intensity1);
                     //sendBLEMessage("meh.");
@@ -757,7 +769,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 if (intensity1-5 > 0) { 
                     intensity1 -= 5;
                     //SendUDPMessage("EMS09RH" + "C1" + "I" + intensity1 + "T" + time + "G");
-                    SendUSBMessage("C0" + "I" + intensity1 + "T" + time + "G");
+                    SendUSBMessage("C0" + "I" + intensity1 + "T" + time + "G", EMS1);
                     lastMessage1 = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond);
                     Console.WriteLine("[EMS1C1-] Decreasing Intensity of EMS Module 1 Channel 1 to: " + intensity1);
                 }
@@ -773,7 +785,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 if (intensity1 + 5 < iMax) {
                     intensity1 += 5;
                     //SendUDPMessage("EMS09RH" + "C2" + "I" + intensity1 + "T" + time + "G");
-                    SendUSBMessage("C1" + "I" + intensity1 + "T" + time + "G");
+                    SendUSBMessage("C1" + "I" + intensity1 + "T" + time + "G", EMS1);
                     lastMessage1 = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond);
                     Console.WriteLine("[EMS1C2+] Increasing (+) Intensity of EMS Module 1 Channel 2 to: " + intensity1);
                 }
@@ -790,7 +802,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 if (intensity1 - 5 > 0) {
                     intensity1 -= 5;
                     //SendUDPMessage("EMS09RH" + "C2" + "I" + intensity1 + "T" + time + "G");
-                    SendUSBMessage("C1" + "I" + intensity1 + "T" + time + "G");
+                    SendUSBMessage("C1" + "I" + intensity1 + "T" + time + "G", EMS1);
                     lastMessage1 = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond);
                     Console.WriteLine("[EMS1C2-] Decreasing (-) Intensity of EMS Module 1 Channel 2 to: " + intensity1);
                 }
@@ -800,25 +812,82 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             }
         }
 
-        // Second EMS Machine
+        // EMS MACHINE 2
         private void EMS2C1Plus(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("[EMS2C1+] Increasing (+) Intensity of EMS Module 2 Channel 1");
+            if ((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) > lastMessage1 + delay1)
+            {
+                if (intensity1 + 5 < iMax)
+                {
+                    intensity1 += 5;
+                    //SendUDPMessage("EMS09RH" + "C1" + "I" + intensity1 + "T" + time + "G");
+                    SendUSBMessage("C0" + "I" + intensity1 + "T" + time + "GS", EMS2);
+                    lastMessage1 = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond);
+                    Console.WriteLine("[EMS2C1+] Increasing Intensity of EMS Module 1 Channel 1 to: " + intensity1);
+                    //sendBLEMessage("meh.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("[EMS2C1+] ERR waiting for delay");
+            }
         }
 
         private void EMS2C1Minus(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("[EMS2C1-] Decreasing (-) Intensity of EMS Module 2 Channel 1");
+            if ((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) > lastMessage1 + delay1)
+            {
+                if (intensity1 - 5 > 0)
+                {
+                    intensity1 -= 5;
+                    //SendUDPMessage("EMS09RH" + "C1" + "I" + intensity1 + "T" + time + "G");
+                    SendUSBMessage("C0" + "I" + intensity1 + "T" + time + "G", EMS2);
+                    lastMessage1 = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond);
+                    Console.WriteLine("[EMS2C1-] Decreasing Intensity of EMS Module 1 Channel 1 to: " + intensity1);
+                }
+            }
+            else
+            {
+                Console.WriteLine("[EMS2C1-] ERR waiting for delay");
+            }
         }
 
         private void EMS2C2Plus(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("[EMS2C2+] Increasing (+) Intensity of EMS Module 2 Channel 2");
+            if ((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) > lastMessage1 + delay1)
+            {
+                if (intensity1 + 5 < iMax)
+                {
+                    intensity1 += 5;
+                    //SendUDPMessage("EMS09RH" + "C2" + "I" + intensity1 + "T" + time + "G");
+                    SendUSBMessage("C1" + "I" + intensity1 + "T" + time + "G", EMS2);
+                    lastMessage1 = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond);
+                    Console.WriteLine("[EMS2C2+] Increasing (+) Intensity of EMS Module 1 Channel 2 to: " + intensity1);
+                }
+            }
+            else
+            {
+                Console.WriteLine("[EMS2C2+] ERR waiting for delay);");
+            }
         }
 
         private void EMS2C2Minus(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("[EMS2C2-] Decreasing (-) Intensity of EMS Module 2 Channel 2");
+            if ((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) > lastMessage1 + delay1)
+            {
+                if (intensity1 - 5 > 0)
+                {
+                    intensity1 -= 5;
+                    //SendUDPMessage("EMS09RH" + "C2" + "I" + intensity1 + "T" + time + "G");
+                    SendUSBMessage("C1" + "I" + intensity1 + "T" + time + "G", EMS2);
+                    lastMessage1 = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond);
+                    Console.WriteLine("[EMS2C2-] Decreasing (-) Intensity of EMS Module 1 Channel 2 to: " + intensity1);
+                }
+            }
+            else
+            {
+                Console.WriteLine("[EMS2C2-] ERR waiting for delay);");
+            }
         }
 
         /////////////////////////////////////////////////////////////////////////////////

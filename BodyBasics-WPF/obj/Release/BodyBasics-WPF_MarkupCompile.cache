@@ -4,16 +4,16 @@
 winexe
 C#
 .cs
-C:\Users\s_nava02\Documents\GitHub\KinectEMS\BodyBasics-WPF\obj\Debug\
+C:\Users\s_nava02\Documents\GitHub\KinectEMS\BodyBasics-WPF\obj\Release\
 Microsoft.Samples.Kinect.BodyBasics
 none
 false
-DEBUG;TRACE
+TRACE
 C:\Users\s_nava02\Documents\GitHub\KinectEMS\BodyBasics-WPF\App.xaml
 11151548125
 
-9-187414078
-66363580470
+5-2017746502
+652002810540
 MainWindow.xaml;
 
 False

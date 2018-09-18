@@ -33,3 +33,4 @@ C:\Users\s_nava02\Documents\GitHub\KinectEMS\BodyBasics-WPF\obj\Debug\BodyBasics
 C:\Users\s_nava02\Documents\GitHub\KinectEMS\BodyBasics-WPF\obj\Debug\BodyBasics-WPF.csproj.CopyComplete
 C:\Users\s_nava02\Documents\GitHub\KinectEMS\BodyBasics-WPF\obj\Debug\BodyBasics-WPF.exe
 C:\Users\s_nava02\Documents\GitHub\KinectEMS\BodyBasics-WPF\obj\Debug\BodyBasics-WPF.pdb
+C:\Users\s_nava02\Documents\GitHub\KinectEMS\BodyBasics-WPF\obj\Debug\BodyBasics-WPF.exe.manifest
