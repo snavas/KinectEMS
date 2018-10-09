@@ -493,13 +493,41 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 }
             }
 
-            // Draw the Archetype
-            DrawArchetype(drawingContext, drawingPen);
+            // Draw the Archetype, We recieve a list with the archetype joints coordinates
+            List<float[]> Archetype = DrawArchetype(drawingContext, drawingPen);
+            //debug
+            Console.WriteLine("("+ Archetype[0][0]+","+ Archetype[0][1] +","+ Archetype[0][2]+")");
+            // gettinf joints coordinates
+            Joint shoulderL = joints[key: JointType.WristRight];
+            Console.WriteLine("(" + shoulderL.Position.X + "," + shoulderL.Position.Y + "," + shoulderL.Position.Z + ")");
+            // DECOLORING ALL BUTTONS
+            button_Up.Background = Brushes.LightGray;
+            button_Down.Background = Brushes.LightGray;
+            button_Left.Background = Brushes.LightGray;
+            button_Right.Background = Brushes.LightGray;
+            // COLORING THE RIGHT BUTTONS
+            //if MATHS HERE
+            if (Archetype[10][0] - shoulderL.Position.X < 0)
+                button_Left.Background = Brushes.LightGreen;
+            else if (Archetype[10][0] - shoulderL.Position.X > 0)
+                button_Right.Background = Brushes.LightGreen;
+            if (Archetype[10][1] - shoulderL.Position.Y < 0)
+                button_Down.Background = Brushes.LightGreen;
+            else if (Archetype[10][1] - shoulderL.Position.Y > 0)
+                button_Up.Background = Brushes.LightGreen;
+            // END
+            /*
+            foreach (var item in Archetype.ToArray())
+            {
+                Console.WriteLine(item[0]);
+            } */
+
         }
 
-        private void DrawArchetype(DrawingContext drawingContext, Pen drawingPen)
+        private List<float[]> DrawArchetype(DrawingContext drawingContext, Pen drawingPen)
         {
             var joints = new List<Point>();
+            var listOfPoints = new List<float[]>();
 
             string[] lines = System.IO.File.ReadAllLines(@"C:\Users\s_nava02\Dropbox\data\ArchetypeS3Q7.txt");
             lines = lines.Skip(1).ToArray();
@@ -513,12 +541,10 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 x = float.Parse(coordinates[1]);
                 y = float.Parse(coordinates[2]);
                 z = float.Parse(coordinates[3]);
+                listOfPoints.Add(new float[] {x, y, z});
                 // sometimes the depth(Z) of an inferred joint may show as negative
                 // clamp down to 0.1f to prevent coordinatemapper from returning (-Infinity, -Infinity)
-                if (z < 0)
-                {
-                    z = InferredZPositionClamp;
-                }
+                if (z < 0) z = InferredZPositionClamp;
                 CameraSpacePoint position = new CameraSpacePoint();
                 position.X = x;
                 position.Y = y;
@@ -553,6 +579,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             drawingContext.DrawLine(this.ArchetypePen, joints[16], joints[17]);
             drawingContext.DrawLine(this.ArchetypePen, joints[17], joints[18]);
             drawingContext.DrawLine(this.ArchetypePen, joints[18], joints[19]);
+            return listOfPoints;
         }
 
         /// <summary>

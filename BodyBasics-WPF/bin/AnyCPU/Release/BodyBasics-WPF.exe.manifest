@@ -48,14 +48,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="BodyBasics-WPF.exe" size="65000">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="BodyBasics-WPF.exe" size="66024">
       <assemblyIdentity name="BodyBasics-WPF" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>pqTztKkCBVJM8ADTMxo85bogVvV8SbdKRaNBDuHOq3s=</dsig:DigestValue>
+        <dsig:DigestValue>IiNAwg4RuU3m8y+sRYjZ3InKXxV4ejfjgpdXZN1Qpck=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
