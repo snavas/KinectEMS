@@ -29,7 +29,7 @@
 #include "Stream.h"
 
 //the string below is how your EMS module will show up for other BLE devices
-#define EMS_BLUETOOTH_ID "EMS14YM"
+#define EMS_BLUETOOTH_ID "EMS09RH"
 //setup for verbose mode (prints debug messages if DEBUG_ON is 1)
 #define DEBUG_ON 1
 

@@ -146,7 +146,11 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         /// Current status text to display
         /// </summary>
         private string statusText = null;
-        
+
+        private bool EMS1pause = true;
+
+        private bool EMS2pause = true;
+
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
         /// </summary>
@@ -250,59 +254,59 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         }
         */
 
-            /*
-        // Boolean flag used to determine when a character other than a number is entered.
-        private bool nonNumberEntered = false;
+        /*
+    // Boolean flag used to determine when a character other than a number is entered.
+    private bool nonNumberEntered = false;
 
-        // Handle the KeyDown event to determine the type of character entered into the control.
-        private void textBox1_KeyDown(object sender, KeyEventArgs e)
+    // Handle the KeyDown event to determine the type of character entered into the control.
+    private void textBox1_KeyDown(object sender, KeyEventArgs e)
+    {
+        Console.WriteLine("Something pressed");
+        // Initialize the flag to false.
+        nonNumberEntered = false;
+
+        if (e.Key == Key.D1) {
+            Console.WriteLine("1 Pressed");
+        } else if (e.Key == Key.D2) {
+            Console.WriteLine("2 Pressed");
+        } else if (e.Key == Key.D3) {
+            Console.WriteLine("3 Pressed");
+        } else if (e.Key == Key.D4) {
+            Console.WriteLine("4 Pressed");
+        } else {
+            nonNumberEntered = true;
+        }
+
+        /*
+        // Determine whether the keystroke is a number from the top of the keyboard.
+        if (e.KeyCode < Keys.D0 || e.KeyCode > Keys.D9)
         {
-            Console.WriteLine("Something pressed");
-            // Initialize the flag to false.
-            nonNumberEntered = false;
-
-            if (e.Key == Key.D1) {
-                Console.WriteLine("1 Pressed");
-            } else if (e.Key == Key.D2) {
-                Console.WriteLine("2 Pressed");
-            } else if (e.Key == Key.D3) {
-                Console.WriteLine("3 Pressed");
-            } else if (e.Key == Key.D4) {
-                Console.WriteLine("4 Pressed");
-            } else {
-                nonNumberEntered = true;
-            }
-
-            /*
-            // Determine whether the keystroke is a number from the top of the keyboard.
-            if (e.KeyCode < Keys.D0 || e.KeyCode > Keys.D9)
+            // Determine whether the keystroke is a number from the keypad.
+            if (e.KeyCode < Keys.NumPad0 || e.KeyCode > Keys.NumPad9)
             {
-                // Determine whether the keystroke is a number from the keypad.
-                if (e.KeyCode < Keys.NumPad0 || e.KeyCode > Keys.NumPad9)
+                // Determine whether the keystroke is a backspace.
+                if (e.KeyCode != Keys.Back)
                 {
-                    // Determine whether the keystroke is a backspace.
-                    if (e.KeyCode != Keys.Back)
-                    {
-                        // A non-numerical keystroke was pressed.
-                        // Set the flag to true and evaluate in KeyPress event.
-                        nonNumberEntered = true;
-                    }
+                    // A non-numerical keystroke was pressed.
+                    // Set the flag to true and evaluate in KeyPress event.
+                    nonNumberEntered = true;
                 }
-            } */
+            }
+        } */
         //}
 
-            /*
-        // This event occurs after the KeyDown event and can be used to prevent
-        // characters from entering the control.
-        private void textBox1_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
+        /*
+    // This event occurs after the KeyDown event and can be used to prevent
+    // characters from entering the control.
+    private void textBox1_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
+    {
+        // Check for the flag being set in the KeyDown event.
+        if (nonNumberEntered == true)
         {
-            // Check for the flag being set in the KeyDown event.
-            if (nonNumberEntered == true)
-            {
-                // Stop the character from being entered into the control since it is non-numerical.
-                e.Handled = true;
-            }
-        }*/
+            // Stop the character from being entered into the control since it is non-numerical.
+            e.Handled = true;
+        }
+    }*/
 
         /////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////
@@ -496,26 +500,39 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             // Draw the Archetype, We recieve a list with the archetype joints coordinates
             List<float[]> Archetype = DrawArchetype(drawingContext, drawingPen);
             //debug
-            Console.WriteLine("("+ Archetype[0][0]+","+ Archetype[0][1] +","+ Archetype[0][2]+")");
+            //Console.WriteLine("(" + Archetype[0][0] + "," + Archetype[0][1] + "," + Archetype[0][2] + ")");
             // gettinf joints coordinates
             Joint shoulderL = joints[key: JointType.WristRight];
-            Console.WriteLine("(" + shoulderL.Position.X + "," + shoulderL.Position.Y + "," + shoulderL.Position.Z + ")");
+            //Console.WriteLine("(" + shoulderL.Position.X + "," + shoulderL.Position.Y + "," + shoulderL.Position.Z + ")");
             // DECOLORING ALL BUTTONS
             button_Up.Background = Brushes.LightGray;
             button_Down.Background = Brushes.LightGray;
             button_Left.Background = Brushes.LightGray;
             button_Right.Background = Brushes.LightGray;
-            // COLORING THE RIGHT BUTTONS
+            // COLORING THE RIGHT BUTTONS & SENDING EMS SIGNAL
             //if MATHS HERE
             if (Archetype[10][0] - shoulderL.Position.X < 0)
+            {
                 button_Left.Background = Brushes.LightGreen;
+                //if(!EMS1pause) SendEMSSignal("COM8", "0", "100", "500");
+            }
             else if (Archetype[10][0] - shoulderL.Position.X > 0)
+            {
                 button_Right.Background = Brushes.LightGreen;
+                //if (!EMS1pause) SendEMSSignal("COM8", "1", "100", "500");
+            }
             if (Archetype[10][1] - shoulderL.Position.Y < 0)
+            {
                 button_Down.Background = Brushes.LightGreen;
+                //if (!EMS2pause) SendEMSSignal2("COM3", "0", "100", "500");
+            }
             else if (Archetype[10][1] - shoulderL.Position.Y > 0)
+            {
                 button_Up.Background = Brushes.LightGreen;
-            // END
+                //if (!EMS2pause) SendEMSSignal2("COM3", "1", "100", "500");
+            }
+                
+            // END MATHS
             /*
             foreach (var item in Archetype.ToArray())
             {
@@ -541,7 +558,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 x = float.Parse(coordinates[1]);
                 y = float.Parse(coordinates[2]);
                 z = float.Parse(coordinates[3]);
-                listOfPoints.Add(new float[] {x, y, z});
+                listOfPoints.Add(new float[] { x, y, z });
                 // sometimes the depth(Z) of an inferred joint may show as negative
                 // clamp down to 0.1f to prevent coordinatemapper from returning (-Infinity, -Infinity)
                 if (z < 0) z = InferredZPositionClamp;
@@ -708,7 +725,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             //port.Write(data, 0, data.Length);
             port.Close();
         }
-        
+
         // UDP IP
         const string ipAddress = "192.168.43.1"; // Android Hotspot ip
         const int port = 5005;
@@ -764,10 +781,42 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         }
         */
 
+
+ 
+           
+
         // Buttons
         private float iMax = 100;
         private string EMS1 = "COM8";
         private string EMS2 = "COM8";
+
+
+        // Send Generic EMS Signal
+        private void SendEMSSignal(string port, string channel, string intensity, string time)
+        {
+            if ((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) > lastMessage1 + delay1)
+            {
+                SendUSBMessage("C" + channel + "I" + intensity + "T" + time + "G", port);
+                lastMessage1 = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond);
+            } else
+            {
+                Console.WriteLine("EMS " + port + " ERROR waiting for delay");
+            }
+        }
+
+        // Send Generic EMS Signal
+        private void SendEMSSignal2(string port, string channel, string intensity, string time)
+        {
+            if ((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) > lastMessage2 + delay1)
+            {
+                SendUSBMessage("C" + channel + "I" + intensity + "T" + time + "G", port);
+                lastMessage2 = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond);
+            }
+            else
+            {
+                Console.WriteLine("EMS " + port + " ERROR waiting for delay");
+            }
+        }
 
         // EMS MACHINE 1
         private void EMS1C1Plus(object sender, RoutedEventArgs e)
@@ -914,6 +963,34 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             else
             {
                 Console.WriteLine("[EMS2C2-] ERR waiting for delay);");
+            }
+        }
+
+        private void button1_Click(object sender, RoutedEventArgs e)
+        {
+            //Console.WriteLine("(Click EMS1 button)");
+            if (EMS1pause == false)
+            {
+                button1.Background = Brushes.LightGray;
+                EMS1pause = true;
+            } else
+            {
+                button1.Background = Brushes.LightGreen;
+                EMS1pause = false;
+            }
+        }
+
+        private void button1_Copy1_Click(object sender, RoutedEventArgs e)
+        {
+            if (EMS2pause == false)
+            {
+                button1_Copy1.Background = Brushes.LightGray;
+                EMS2pause = true;
+            }
+            else
+            {
+                button1_Copy1.Background = Brushes.LightGreen;
+                EMS2pause = false;
             }
         }
 

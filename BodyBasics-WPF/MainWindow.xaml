@@ -25,7 +25,7 @@
             Margin = "18,0,0,0.2"  
             Width = "68"  
             HorizontalAlignment = "Left"
-            Foreground = "DarkBlue"/>
+            Foreground = "DarkBlue" Click="button1_Click"/>
 
         <Button x:Name = "EMSC1Plus"  
             Content = "+" 
@@ -85,7 +85,7 @@
             Margin = "280,0,325.6,0.2"  
             Width = "68"  
             HorizontalAlignment = "Center"  
-            Foreground = "DarkBlue"/>
+            Foreground = "DarkBlue" Click="button1_Copy1_Click"/>
         <Button x:Name = "EMSC1__Copy"  
             Content = "+" 
             Click = "EMS2C1Plus"  
