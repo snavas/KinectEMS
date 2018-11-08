@@ -29,3 +29,12 @@ C# app.
  * Kinect JointType Enumeration: https://docs.microsoft.com/en-us/previous-versions/windows/kinect/dn758663(v=ieb.10)
  * CameraSpacePoint Structure: https://docs.microsoft.com/en-us/previous-versions/windows/kinect/dn772836(v%3dieb.10)
  
+## ACKNOWLEDGMENTS
+BodyBasics-WPF is a modified version of the sample code provide by Microsoft in the Kinect 2.0 SDK Browser.
+
+EMSModule is a fork of the Let Your Body Move ToolKit by Max Pfeiffer https://bitbucket.org/MaxPfeiffer/letyourbodymove/wiki/Home
+
+This project has received funding from the European Union’s Horizon 2020 research and innovation programme under the Marie Skłodowska-Curie grant agreement No 676063
+
+## LICENSE
+This work is unter a MIT License Copyright (c) 2018 Samuel Navas Medrano as stated in LICENSE
