@@ -24,6 +24,9 @@ namespace Microsoft.Samples.Kinect.BodyBasics
     //using Windows.Devices.Bluetooth;
     //using Windows.Devices.Enumeration;
     using System.IO.Ports;
+    using System.Net.WebSockets;
+    using System.Security.Cryptography;
+    using System.Threading;
 
     /// <summary>
     /// Interaction logic for MainWindow
@@ -146,10 +149,6 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         /// Current status text to display
         /// </summary>
         private string statusText = null;
-
-        private bool EMS1pause = true;
-
-        private bool EMS2pause = true;
 
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
@@ -310,6 +309,16 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
         /////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////
+        ///
+        /// <summary>
+        /// Generate random numbers
+        /// </summary>
+        static int GetNextInt32(RNGCryptoServiceProvider rnd)
+        {
+            byte[] randomInt = new byte[4];
+            rnd.GetBytes(randomInt);
+            return Convert.ToInt32(randomInt[0]);
+        }
 
         /// <summary>
         /// INotifyPropertyChangedPropertyChanged event to allow window controls to bind to changeable data
@@ -352,6 +361,44 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             }
         }
 
+        private int skeletonIndex = 0;
+        /*private string[,] skeletonArray_test =  {{ "P20S3Q3", "P20S3Q4", "P20S3Q7", "P20S3Q2", "P20S3Q6", "P20S3Q1", "P20S3Q8" }, // 2d array
+                                            { "P20S3Q3", "P20S3Q4", "P20S3Q7", "P20S3Q2", "P20S3Q6", "P20S3Q1", "P20S3Q8" },
+                                            { "P20S3Q3", "P20S3Q4", "P20S3Q7", "P20S3Q2", "P20S3Q6", "P20S3Q1", "P20S3Q8" }};*/
+        //private string[] V1skeletonArray = { "P20S3Q3", "P20S3Q4", "P20S3Q7", "P20S3Q2", "P20S3Q6", "P20S3Q1", "P20S3Q8" };
+        private string[] V1skeletonArray = { "S1Q2", "S1Q3", "S1Q5", "S2Q2", "S2Q4", "S2Q5", "S2Q7", "S3Q1", "S3Q3", "S3Q7" }; // v1, v2 and v3 are in this array
+        private string[] V2skeletonArray = { "0.102", "0.103", "0.105", "0.202", "0.204", "0.207", "0.301", "0.303", "0.307" }; // unused
+        private string[] V3skeletonArray = { "P20S3Q3", "P20S3Q4", "P20S3Q7", "P20S3Q2", "P20S3Q6", "P20S3Q1", "P20S3Q8" }; // unused
+        private string[][] skeletonArray = new string[3][]; // jagged array
+        private int videoIndex = 0;
+        private IDictionary<string, float> offsets = new Dictionary<string, float>(){
+                                                {"S1Q1",0.102f},
+                                                {"S1Q3",0.103f},
+                                                {"S1Q5",0.105f},
+                                                {"S2Q2",0.202f},
+                                                {"S2Q4",0.204f},
+                                                {"S2Q5",0.205f},
+                                                {"S2Q7",0.207f},
+                                                {"S3Q1",0.301f},
+                                                {"S3Q3",0.303f},
+                                                {"S3Q7",0.307f}
+                                            };
+        //offsets.Add(new KeyValuePair<string, float>("S1Q1", 0.102f));
+
+
+        private DateTime start;
+
+        private double getTime()
+        {
+            TimeSpan time = DateTime.Now - start;
+            //return(String.Format("{0}.{1}", time.Seconds, time.Milliseconds.ToString().PadLeft(3, '0')));
+            return (time.TotalMilliseconds/1000);
+        }
+
+        private float offset_X = 0.1f;
+        private float offset_Y = 0.1f;
+        //private StopWatch sw = new StopWatch();
+
         /// <summary>
         /// Execute start up tasks
         /// </summary>
@@ -359,6 +406,40 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         /// <param name="e">event arguments</param>
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+
+            //sw.Start();
+
+            /*
+            // BUG, THE THREE ARRAYS ARE RANDOMISED BUT ALL IN THE SAME WAY 
+            Random rnd1 = new Random();
+            skeletonArray[0] = V1skeletonArray.OrderBy(x => rnd1.Next()).ToArray();
+            Random rnd2 = new Random();
+            skeletonArray[1] = V2skeletonArray.OrderBy(x => rnd2.Next()).ToArray();
+            Random rnd3 = new Random();
+            skeletonArray[2] = V3skeletonArray.OrderBy(x => rnd3.Next()).ToArray();
+            */
+
+            RNGCryptoServiceProvider rnd = new RNGCryptoServiceProvider();
+            skeletonArray[0] = V1skeletonArray.OrderBy(x => GetNextInt32(rnd)).ToArray();
+            skeletonArray[1] = V1skeletonArray.OrderBy(x => GetNextInt32(rnd)).ToArray();
+            skeletonArray[2] = V1skeletonArray.OrderBy(x => GetNextInt32(rnd)).ToArray();
+            //Console.WriteLine(skeletonArray[0].ToString);
+            start = DateTime.Now;
+            Console.WriteLine("[" + getTime() + "] Task random order generated " + string.Join(",", skeletonArray[0]));
+            Console.WriteLine("[" + getTime() + "] Current task " + skeletonArray[videoIndex][skeletonIndex]);
+            float result;
+            if (offsets.TryGetValue(skeletonArray[videoIndex][skeletonIndex], out result)){
+                offset_X = result;
+                offset_Y = result;
+                Console.WriteLine("[" + getTime() + "] Current offset x=" + offset_X + ", y=" + offset_Y);
+            }
+            //Console.WriteLine("[" + getTime() + "] Current offset " + offsets.TryGetValue(skeletonArray[videoIndex][skeletonIndex]);  // dict.TryGetValue(4
+
+
+
+            //string[] randomisedSkeletonArray = skeletonArray.OrderBy(x => rnd.Next()).ToArray();
+            //skeletonArray = randomisedSkeletonArray;
+
             if (this.bodyFrameReader != null)
             {
                 this.bodyFrameReader.FrameArrived += this.Reader_FrameArrived;
@@ -460,6 +541,26 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             }
         }
 
+        // EMS
+        private long time = 2000;
+        //private float offset_X = 0.1f;
+        //private float offset_Y = 0.1f;
+        private bool secuential = true;
+        // left - right
+        private bool EMS1pause = true;
+        private string EMS1port = "COM4";
+        private long delay1 = 700;
+        private long lastMessage1 = 0;
+        private string intensity1 = "100";
+        private string duration1 = "1000";
+        // up - downS
+        private bool EMS2pause = true;
+        private string EMS2port = "COM5";
+        private long delay2 = 700;
+        private long lastMessage2 = 0;
+        private string intensity2 = "100";
+        private string duration2 = "1000";
+
         /// <summary>
         /// Draws a body
         /// </summary>
@@ -510,35 +611,69 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             button_Left.Background = Brushes.LightGray;
             button_Right.Background = Brushes.LightGray;
             // COLORING THE RIGHT BUTTONS & SENDING EMS SIGNAL
-            //if MATHS HERE
-            if (Archetype[10][0] - shoulderL.Position.X < 0)
+            if (secuential) // SECUENTIAL
             {
-                button_Left.Background = Brushes.LightGreen;
-                //if(!EMS1pause) SendEMSSignal("COM8", "0", "100", "500");
+                if (Archetype[10][0] - shoulderL.Position.X < -offset_X)
+                {
+                    button_Left.Background = Brushes.LightGreen;
+                    if (!EMS1pause) SendEMSSignal("COM4", "0", intensity1, duration1);
+                    if (!EMS2pause) SendEMSSignal2("COM5", "1", intensity2, "1");
+                }
+                else if (Archetype[10][0] - shoulderL.Position.X > offset_X)
+                {
+                    button_Right.Background = Brushes.LightGreen;
+                    if (!EMS1pause) SendEMSSignal("COM4", "1", intensity1, duration1);
+                    if (!EMS2pause) SendEMSSignal2("COM5", "1", intensity2, "1");
+                }
+                else  if (Archetype[10][1] - shoulderL.Position.Y < 0) // Secuential
+                {
+                    button_Down.Background = Brushes.LightGreen;
+                    if (!EMS2pause) SendEMSSignal2("COM5", "1", intensity2, duration2);
+                    if (!EMS1pause) SendEMSSignal("COM4", "0", intensity1, "1");
+                }
+                else if (Archetype[10][1] - shoulderL.Position.Y > offset_Y)
+                {
+                    button_Up.Background = Brushes.LightGreen;
+                    if (!EMS2pause) SendEMSSignal2("COM5", "0", intensity2, duration2);
+                    if (!EMS1pause) SendEMSSignal("COM4", "0", intensity1, "1");
+                } else
+                {
+                    if (!EMS1pause) SendEMSSignal("COM4", "0", intensity1, "1");
+                    if (!EMS2pause) SendEMSSignal2("COM5", "1", intensity2, "1");
+                }
+            } else // PARALEL
+            {
+                if (Archetype[10][0] - shoulderL.Position.X < -offset_X)
+                {
+                    button_Left.Background = Brushes.LightGreen;
+                    if (!EMS1pause) SendEMSSignal(EMS1port, "1", intensity1, duration1);
+                }
+                else if (Archetype[10][0] - shoulderL.Position.X > offset_X)
+                {
+                    button_Right.Background = Brushes.LightGreen;
+                    if (!EMS1pause) SendEMSSignal(EMS1port, "0", intensity1, duration1);
+                }
+                else
+                {
+                    // 1ms signal stops the EMS machine
+                    if (!EMS1pause) SendEMSSignal(EMS1port, "0", intensity1, "1");
+                }
+                if (Archetype[10][1] - shoulderL.Position.Y < -offset_Y)
+                {
+                    button_Down.Background = Brushes.LightGreen;
+                    if (!EMS2pause) SendEMSSignal2(EMS2port, "0", intensity2, duration2);
+                }
+                else if (Archetype[10][1] - shoulderL.Position.Y > offset_Y)
+                {
+                    button_Up.Background = Brushes.LightGreen;
+                    if (!EMS2pause) SendEMSSignal2(EMS2port, "1", intensity2, duration2);
+                }
+                else
+                {
+                    // 1ms signal stops the EMS machine
+                    if (!EMS2pause) SendEMSSignal2(EMS2port, "0", intensity2, "1");
+                }
             }
-            else if (Archetype[10][0] - shoulderL.Position.X > 0)
-            {
-                button_Right.Background = Brushes.LightGreen;
-                //if (!EMS1pause) SendEMSSignal("COM8", "1", "100", "500");
-            }
-            if (Archetype[10][1] - shoulderL.Position.Y < 0)
-            {
-                button_Down.Background = Brushes.LightGreen;
-                //if (!EMS2pause) SendEMSSignal2("COM3", "0", "100", "500");
-            }
-            else if (Archetype[10][1] - shoulderL.Position.Y > 0)
-            {
-                button_Up.Background = Brushes.LightGreen;
-                //if (!EMS2pause) SendEMSSignal2("COM3", "1", "100", "500");
-            }
-                
-            // END MATHS
-            /*
-            foreach (var item in Archetype.ToArray())
-            {
-                Console.WriteLine(item[0]);
-            } */
-
         }
 
         private List<float[]> DrawArchetype(DrawingContext drawingContext, Pen drawingPen)
@@ -546,11 +681,15 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             var joints = new List<Point>();
             var listOfPoints = new List<float[]>();
 
-            string[] lines = System.IO.File.ReadAllLines(@"C:\Users\s_nava02\Dropbox\data\ArchetypeS3Q7.txt");
-            lines = lines.Skip(1).ToArray();
+            string[] lines = System.IO.File.ReadAllLines(@"C:\Users\s_nava02\Dropbox\data\skeletons\"+skeletonArray[videoIndex][skeletonIndex]+".txt");
+            button_current.Content = skeletonArray[videoIndex][skeletonIndex];
+            //lines = lines.Skip(1).ToArray();
             //System.Console.WriteLine("Contents of WriteLines2.txt = ");
-            foreach (string line in lines)
+            //foreach (string line in lines)
+            for (int i = 1; i < 26; i++)
             {
+                string line = lines[i];
+                //Console.WriteLine(line);
                 // Use a tab to indent each line of the file.
                 // Console.WriteLine("\t" + line);
                 string[] coordinates = line.Split(' ');
@@ -596,6 +735,8 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             drawingContext.DrawLine(this.ArchetypePen, joints[16], joints[17]);
             drawingContext.DrawLine(this.ArchetypePen, joints[17], joints[18]);
             drawingContext.DrawLine(this.ArchetypePen, joints[18], joints[19]);
+            // DRAWING OFFSET CIRCLE
+            drawingContext.DrawEllipse(null, this.ArchetypePen, joints[10], 5, 5);
             return listOfPoints;
         }
 
@@ -729,13 +870,6 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         // UDP IP
         const string ipAddress = "192.168.43.1"; // Android Hotspot ip
         const int port = 5005;
-        private long delay1 = 200;
-        private long lastMessage1 = 0;
-        private long intensity1 = 100;
-        private long delay2 = 200;
-        private long lastMessage2 = 0;
-        private long intensity2 = 100;
-        private long time = 2000;
 
         private void SendUDPMessage(string message)
         {
@@ -745,6 +879,14 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             var data = Encoding.ASCII.GetBytes(message);
             client.Send(data, data.Length);
             Console.WriteLine($"[{ipAddress}:{port}]: {message}");
+        }
+
+        // WebSocket
+        private async void sendWebSocketMessageAsync(string message)
+        {
+            ClientWebSocket webSocket = null;
+            webSocket = new ClientWebSocket();
+            await webSocket.ConnectAsync(new Uri("http://giv-sitcomdev.uni-muenster.de:4000/"), System.Threading.CancellationToken.None);
         }
 
         // BLE
@@ -787,7 +929,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
         // Buttons
         private float iMax = 100;
-        private string EMS1 = "COM8";
+        private string EMS1 = "COM4";
         private string EMS2 = "COM8";
 
 
@@ -800,7 +942,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 lastMessage1 = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond);
             } else
             {
-                Console.WriteLine("EMS " + port + " ERROR waiting for delay");
+                //Console.WriteLine("EMS " + port + " ERROR waiting for delay");
             }
         }
 
@@ -814,13 +956,15 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             }
             else
             {
-                Console.WriteLine("EMS " + port + " ERROR waiting for delay");
+                //Console.WriteLine("EMS " + port + " ERROR waiting for delay");
             }
         }
 
+        
         // EMS MACHINE 1
         private void EMS1C1Plus(object sender, RoutedEventArgs e)
         {
+            int intensity1 = 100;
             //TimeSpan date = DateTime.Now.TimeOfDay;
             //SendUSBMessage("C0I100T2000GS", "COM8");
             //Console.WriteLine(date - DateTime.Now.TimeOfDay);
@@ -841,6 +985,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
         private void EMS1C1Minus(object sender, RoutedEventArgs e)
         {
+            int intensity1 = 100;
             if ((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) > lastMessage1 + delay1) {
                 if (intensity1-5 > 0) { 
                     intensity1 -= 5;
@@ -857,6 +1002,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
         private void EMS1C2Plus(object sender, RoutedEventArgs e)
         {
+            int intensity1 = 100;
             if ((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) > lastMessage1 + delay1) {
                 if (intensity1 + 5 < iMax) {
                     intensity1 += 5;
@@ -875,6 +1021,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         {
             if ((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) > lastMessage1 + delay1)
             {
+                int intensity1 = 100;
                 if (intensity1 - 5 > 0) {
                     intensity1 -= 5;
                     //SendUDPMessage("EMS09RH" + "C2" + "I" + intensity1 + "T" + time + "G");
@@ -891,6 +1038,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         // EMS MACHINE 2
         private void EMS2C1Plus(object sender, RoutedEventArgs e)
         {
+            int intensity1 = 100;
             if ((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) > lastMessage1 + delay1)
             {
                 if (intensity1 + 5 < iMax)
@@ -911,6 +1059,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
         private void EMS2C1Minus(object sender, RoutedEventArgs e)
         {
+            int intensity1 = 100;
             if ((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) > lastMessage1 + delay1)
             {
                 if (intensity1 - 5 > 0)
@@ -930,6 +1079,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
         private void EMS2C2Plus(object sender, RoutedEventArgs e)
         {
+            int intensity1 = 100;
             if ((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) > lastMessage1 + delay1)
             {
                 if (intensity1 + 5 < iMax)
@@ -949,6 +1099,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
         private void EMS2C2Minus(object sender, RoutedEventArgs e)
         {
+            int intensity1 = 100;
             if ((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) > lastMessage1 + delay1)
             {
                 if (intensity1 - 5 > 0)
@@ -964,19 +1115,20 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             {
                 Console.WriteLine("[EMS2C2-] ERR waiting for delay);");
             }
-        }
+        } 
 
         private void button1_Click(object sender, RoutedEventArgs e)
         {
-            //Console.WriteLine("(Click EMS1 button)");
             if (EMS1pause == false)
             {
                 button1.Background = Brushes.LightGray;
                 EMS1pause = true;
+                Console.WriteLine("[" + getTime() + "] EMS1 OFF ");
             } else
             {
                 button1.Background = Brushes.LightGreen;
                 EMS1pause = false;
+                Console.WriteLine("[" + getTime() + "] EMS1 ON ");
             }
         }
 
@@ -986,14 +1138,127 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             {
                 button1_Copy1.Background = Brushes.LightGray;
                 EMS2pause = true;
+                Console.WriteLine("[" + getTime() + "] EMS2 OFF ");
             }
             else
             {
                 button1_Copy1.Background = Brushes.LightGreen;
                 EMS2pause = false;
+                Console.WriteLine("[" + getTime() + "] EMS2 ON ");
             }
         }
 
+        private void button1_Copy_Click(object sender, RoutedEventArgs e)
+        // PREVIOUS STIMULI BUTTON
+        {
+
+            //if (skeletonIndex < skeletonArray.Length - 1) skeletonIndex += 1;
+            //else skeletonIndex = 0;
+            //Console.WriteLine("[" + getTime() + "] Current task " + skeletonArray[videoIndex][skeletonIndex]);
+            // CHANGE SKELETON DATA
+            //if (skeletonIndex > 0) skeletonIndex -= 1;
+            //else skeletonIndex = skeletonArray.Length - 1;
+            if (skeletonIndex > 0) // HARDCODED. QUICK FIX
+            {
+                skeletonIndex--;
+                Console.WriteLine("[" + getTime() + "] Current task " + skeletonArray[videoIndex][skeletonIndex]);
+                float result;
+                if (offsets.TryGetValue(skeletonArray[videoIndex][skeletonIndex], out result))
+                {
+                    offset_X = result;
+                    offset_Y = result;
+                    Console.WriteLine("[" + getTime() + "] Current offset x=" + offset_X + ", y=" + offset_Y);
+                }
+                Console.WriteLine("Skeletonindex: " + skeletonIndex);
+            }
+            else
+                Console.WriteLine("[" + getTime() + "] NO MORE TASK REMAINING. EXPERIMENT FINISHED");
+
+        }
+
+        private void button1_Copy2_Click(object sender, RoutedEventArgs e)
+        // NEXT STIMULI BUTTON
+        {
+            // TODO FUNCTIONALITY 1: CHANGE SKELETON DATA
+            //if (skeletonIndex > 0) skeletonIndex -= 1;
+            //else skeletonIndex = skeletonArray.Length - 1;
+            if (skeletonIndex < 9) // HARDCODED. QUICK FIX
+            {
+                skeletonIndex++;
+                Console.WriteLine("[" + getTime() + "] Current task " + skeletonArray[videoIndex][skeletonIndex]);
+                float result;
+                if (offsets.TryGetValue(skeletonArray[videoIndex][skeletonIndex], out result))
+                {
+                    offset_X = result;
+                    offset_Y = result;
+                    Console.WriteLine("[" + getTime() + "] Current offset x=" + offset_X + ", y=" + offset_Y);
+                }
+                Console.WriteLine("Skeletonindex: " + skeletonIndex);
+            }
+            else
+                Console.WriteLine("[" + getTime() + "] NO MORE TASK REMAINING. EXPERIMENT FINISHED");
+            // TODO FUNCTIONALITY 2: CHANGE IVE VIDEO
+
+        }
+
+        private void button_Up_Copy_Click(object sender, RoutedEventArgs e)
+        {
+            videoIndex = 0;
+            skeletonIndex = 0;
+        }
+
+        private void button_Up_Copy1_Click(object sender, RoutedEventArgs e)
+        {
+            videoIndex = 1;
+            skeletonIndex = 0;
+        }
+
+        private void button_Up_Copy2_Click(object sender, RoutedEventArgs e)
+        {
+            videoIndex = 2;
+            skeletonIndex = 0;
+        }
+
+        private void button_Down_Copy_Click(object sender, RoutedEventArgs e)
+        {
+            // ONLY .WAV FILES
+            //System.Media.SoundPlayer player = new System.Media.SoundPlayer(@"C:\Users\s_nava02\Dropbox\data\sounds\translate_tts (1).mp3");
+            //player.Play();
+            //WMPLib.WindowsMediaPlayer wplayer = new WMPLib.WindowsMediaPlayer();
+            //wplayer.URL = @"C:\Users\s_nava02\Dropbox\data\sounds\translate_tts (1).mp3";
+            //wplayer.controls.play();
+        }
+
+        private void button_Down_Copy_Click_1(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void button_Up_Copy3_Click(object sender, RoutedEventArgs e)
+        {
+            // ONLY .WAV FILES
+            System.Media.SoundPlayer player = new System.Media.SoundPlayer(@"C:\Users\s_nava02\Dropbox\data\sounds\" + skeletonArray[videoIndex][skeletonIndex] + ".wav");
+            player.Play();
+            //WMPLib.WindowsMediaPlayer wplayer = new WMPLib.WindowsMediaPlayer();
+            //wplayer.URL = @"C:\Users\s_nava02\Dropbox\data\sounds\" + skeletonArray[videoIndex][skeletonIndex] + ".mp3"; // problems (!) maybe better to convert to wav ^
+            //wplayer.controls.play();
+            Console.WriteLine("[" + getTime() + "] Played audio cue: " + skeletonArray[videoIndex][skeletonIndex]);
+        }
+
+        private void button_A_Click(object sender, RoutedEventArgs e)
+        {
+            Console.WriteLine("[" + getTime() + "] A" );
+        }
+
+        private void button_B_Click(object sender, RoutedEventArgs e)
+        {
+            Console.WriteLine("[" + getTime() + "] B");
+        }
+
+        private void button_C_Click(object sender, RoutedEventArgs e)
+        {
+            Console.WriteLine("[" + getTime() + "] DONE");
+        }
         /////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////
     }

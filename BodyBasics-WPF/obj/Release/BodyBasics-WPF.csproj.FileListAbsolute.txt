@@ -19,3 +19,5 @@ C:\Users\s_nava02\Documents\GitHub\KinectEMS\BodyBasics-WPF\obj\Release\BodyBasi
 C:\Users\s_nava02\Documents\GitHub\KinectEMS\BodyBasics-WPF\obj\Release\BodyBasics-WPF.csproj.CopyComplete
 C:\Users\s_nava02\Documents\GitHub\KinectEMS\BodyBasics-WPF\obj\Release\BodyBasics-WPF.exe
 C:\Users\s_nava02\Documents\GitHub\KinectEMS\BodyBasics-WPF\obj\Release\BodyBasics-WPF.pdb
+C:\Users\s_nava02\Documents\GitHub\KinectEMS\BodyBasics-WPF\obj\Release\Interop.WMPLib.dll
+C:\Users\s_nava02\Documents\GitHub\KinectEMS\BodyBasics-WPF\obj\Release\BodyBasics-WPF.csproj.ResolveComReference.cache

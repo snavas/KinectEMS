@@ -17,25 +17,15 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Image Grid.Row="0" Source="Images\Logo.png" HorizontalAlignment="Left" Stretch="Fill" Height="32" Width="5" Margin="0,10,0,5.2" />
+        <Image Grid.Row="0" Source="Images\Logo.png" HorizontalAlignment="Left" Stretch="Fill" Height="32" Width="1" Margin="0,10,0,5.2" />
 
         <Button x:Name = "button1"  
-            Content = "EMS1 C1" 
+            Content = "EMS1" 
             ClickMode = "Press" 
-            Margin = "18,0,0,0.2"  
-            Width = "68"  
-            HorizontalAlignment = "Left"
+            Margin = "11,0,620.6,0.2"  
+            Width = "42"  
+            HorizontalAlignment = "Center"
             Foreground = "DarkBlue" Click="button1_Click"/>
-
-        <Button x:Name = "EMSC1Plus"  
-            Content = "+" 
-            Click = "EMS1C1Plus"  
-            ClickMode = "Press" 
-            Margin = "91,1,558.6,0.2"  
-            Width = "24"  
-            HorizontalAlignment = "Center"  
-            Background="LightGreen"
-            Foreground = "DarkGreen"/>
 
 
         <Viewbox Grid.Row="1" HorizontalAlignment="Center">
@@ -45,90 +35,27 @@
         <StatusBar Grid.Row="2" HorizontalAlignment="Stretch" Name="statusBar" VerticalAlignment="Bottom" Background="White" Foreground="{StaticResource MediumGreyBrush}">
             <StatusBarItem Content="{Binding StatusText}" />
         </StatusBar>
-        <Button x:Name = "EMSC1Minus"  
-            Content = "-" 
-            Click = "EMS1C1Minus"  
-            ClickMode = "Press" 
-            Margin = "120,1,529.6,0.2"  
-            Width = "24"  
-            HorizontalAlignment = "Center"
-            Background= "LightCoral"
-            Foreground = "DarkRed"/>
         <Button x:Name = "button1_Copy"  
-            Content = "EMS1 C2"  
+            Content = "Prev Stimuli"  
             ClickMode = "Press" 
-            Margin = "149,0,456.6,0.2"  
+            Margin = "396,0,209.6,0.2"  
             Width = "68"  
             HorizontalAlignment = "Center"  
-            Foreground = "DarkBlue"/>
-        <Button x:Name = "EMSC2Plus"  
-            Content = "+" 
-            Click = "EMS1C2Plus"  
-            ClickMode = "Press" 
-            Margin = "222,1,427.6,0.2"  
-            Width = "24"  
-            HorizontalAlignment = "Center"  
-            Background="LightGreen"
-            Foreground = "DarkGreen"/>
-        <Button x:Name = "EMSC1Minus_Copy"  
-            Content = "-" 
-            Click = "EMS2C2Minus"  
-            ClickMode = "Press" 
-            Margin = "251,1,398.6,0.2"  
-            Width = "24"  
-            HorizontalAlignment = "Center"  
-            Background= "LightCoral"
-            Foreground = "DarkRed"/>
+            Foreground = "DarkBlue" Click="button1_Copy_Click"/>
         <Button x:Name = "button1_Copy1"  
-            Content = "EMS2 C1"  
+            Content = "EMS2"  
             ClickMode = "Press" 
-            Margin = "280,0,325.6,0.2"  
-            Width = "68"  
+            Margin = "58,0,576.6,0.2"  
+            Width = "39"  
             HorizontalAlignment = "Center"  
             Foreground = "DarkBlue" Click="button1_Copy1_Click"/>
-        <Button x:Name = "EMSC1__Copy"  
-            Content = "+" 
-            Click = "EMS2C1Plus"  
-            ClickMode = "Press" 
-            Margin = "353,1,296.6,0.2"  
-            Width = "24"  
-            HorizontalAlignment = "Center"  
-            Background="LightGreen"
-            Foreground = "DarkGreen"/>
-        <Button x:Name = "EMSC1Minus_Copy1"  
-            Content = "-" 
-            Click = "EMS2C1Minus"  
-            ClickMode = "Press" 
-            Margin = "382,1,267.6,0.2"  
-            Width = "24"  
-            HorizontalAlignment = "Center"  
-            Background= "LightCoral"
-            Foreground = "DarkRed"/>
         <Button x:Name = "button1_Copy2"  
-            Content = "EMS2 C2" 
+            Content = "Next Stimuli" 
             ClickMode = "Press" 
-            Margin = "411,0,194.6,0.2"  
+            Margin = "469,0,136.6,0.2"  
             Width = "68"  
             HorizontalAlignment = "Center"  
-            Foreground = "DarkBlue"/>
-        <Button x:Name = "EMSC1__Copy1"  
-            Content = "+" 
-            Click = "EMS2C2Plus"  
-            ClickMode = "Press" 
-            Margin = "484,1,165.6,0.2"  
-            Width = "24"  
-            HorizontalAlignment = "Center"  
-            Background="LightGreen"
-            Foreground = "DarkGreen"/>
-        <Button x:Name = "EMSC1Minus_Copy2"  
-            Content = "-" 
-            Click = "EMS2C2Minus"  
-            ClickMode = "Press" 
-            Margin = "513,1,136.6,0.2"  
-            Width = "24"  
-            HorizontalAlignment = "Center"  
-            Background= "LightCoral"
-            Foreground = "DarkRed"/>
+            Foreground = "DarkBlue" Click="button1_Copy2_Click"/>
         <Button x:Name = "button_Up"  
             Content = "▲" 
             ClickMode = "Press" 
@@ -160,5 +87,77 @@
             HorizontalAlignment = "Center"
             Background="LightGray"
             Foreground = "DarkBlue"/>
+        <Button x:Name = "button_Up_Copy"  
+            Content = "V1" 
+            ClickMode = "Press" 
+            Margin = "182,0,462.6,0.2"  
+            Width = "29"  
+            HorizontalAlignment = "Center"
+            Background="LightGray"
+            Foreground = "DarkBlue" Click="button_Up_Copy_Click"/>
+        <Button x:Name = "button_Up_Copy1"  
+            Content = "V2" 
+            ClickMode = "Press" 
+            Margin = "216,0,428.6,0.2"  
+            Width = "29"  
+            HorizontalAlignment = "Center"
+            Background="LightGray"
+            Foreground = "DarkBlue" Click="button_Up_Copy1_Click"/>
+        <Button x:Name = "button_Up_Copy2"  
+            Content = "V3" 
+            ClickMode = "Press" 
+            Margin = "250,0,394.6,0.2"  
+            Width = "29"  
+            HorizontalAlignment = "Center"
+            Background="LightGray"
+            Foreground = "DarkBlue" Click="button_Up_Copy2_Click"/>
+        <Button x:Name = "button_Up_Copy3"  
+            Content = "🔊" 
+            ClickMode = "Press" 
+            Margin = "362,0,282.6,0"  
+            Width = "29"  
+            HorizontalAlignment = "Center"
+            Background="LightGray"
+            Foreground = "DarkBlue" Height="47" VerticalAlignment="Top" Click="button_Up_Copy3_Click"/>
+        <Button x:Name = "button_current"  
+            Content = "Current task" 
+            ClickMode = "Press" 
+            Margin = "286,0,316.6,0.2"  
+            Width = "71"  
+            HorizontalAlignment = "Center"
+            Background="LightGray"
+            Foreground = "DarkBlue"/>
+        <Button x:Name = "button_A"  
+            Content = "A" 
+            ClickMode = "Press" 
+            Margin = "102,0,556.6,0.2"  
+            Width = "15"  
+            HorizontalAlignment = "Center"
+            Background="LightGray"
+            Foreground = "DarkBlue" Click="button_A_Click"/>
+        <Button x:Name = "button_B"  
+            Content = "B" 
+            ClickMode = "Press" 
+            Margin = "122,0,536.6,0.2"  
+            Width = "15"  
+            HorizontalAlignment = "Center"
+            Background="LightGray"
+            Foreground = "DarkBlue" Click="button_B_Click"/>
+        <Button x:Name = "button_C"  
+            Content = "C" 
+            ClickMode = "Press" 
+            Margin = "142,0,516.6,0.2"  
+            Width = "15"  
+            HorizontalAlignment = "Center"
+            Background="LightGray"
+            Foreground = "DarkBlue" Click="button_C_Click"/>
+        <Button x:Name = "button_C_Copy"  
+            Content = "X" 
+            ClickMode = "Press" 
+            Margin = "162,0,496.6,0.2"  
+            Width = "15"  
+            HorizontalAlignment = "Center"
+            Background="LightGray"
+            Foreground = "DarkBlue" Click="button_C_Click"/>
     </Grid>
 </Window>
