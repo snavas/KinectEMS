@@ -150,6 +150,8 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         /// </summary>
         private string statusText = null;
 
+        private float height_adjustment = 0.0f;
+
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
         /// </summary>
@@ -366,22 +368,33 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                                             { "P20S3Q3", "P20S3Q4", "P20S3Q7", "P20S3Q2", "P20S3Q6", "P20S3Q1", "P20S3Q8" },
                                             { "P20S3Q3", "P20S3Q4", "P20S3Q7", "P20S3Q2", "P20S3Q6", "P20S3Q1", "P20S3Q8" }};*/
         //private string[] V1skeletonArray = { "P20S3Q3", "P20S3Q4", "P20S3Q7", "P20S3Q2", "P20S3Q6", "P20S3Q1", "P20S3Q8" };
-        private string[] V1skeletonArray = { "S1Q2", "S1Q3", "S1Q5", "S2Q2", "S2Q4", "S2Q5", "S2Q7", "S3Q1", "S3Q3", "S3Q7" }; // v1, v2 and v3 are in this array
+        private string[] V1skeletonArray = { "A-S1Q2-1", "A-S1Q2-2", "A-S1Q3-1", "A-S1Q5-1", "A-S1Q5-2",
+                                             "A-S2Q2-1", "A-S2Q2-2", "A-S2Q4-1", "A-S2Q5-1", "A-S2Q5-2", "A-S2Q7-1", "A-S2Q7-2",
+                                             "A-S3Q1-1", "A-S3Q1-2", "A-S3Q1-3", "A-S3Q3-1", "A-S3Q3-2", "A-S3Q7-1", "A-S3Q7-2" }; // v1, v2 and v3 are in this array
         private string[] V2skeletonArray = { "0.102", "0.103", "0.105", "0.202", "0.204", "0.207", "0.301", "0.303", "0.307" }; // unused
         private string[] V3skeletonArray = { "P20S3Q3", "P20S3Q4", "P20S3Q7", "P20S3Q2", "P20S3Q6", "P20S3Q1", "P20S3Q8" }; // unused
         private string[][] skeletonArray = new string[3][]; // jagged array
         private int videoIndex = 0;
         private IDictionary<string, float> offsets = new Dictionary<string, float>(){
-                                                {"S1Q1",0.102f},
-                                                {"S1Q3",0.103f},
-                                                {"S1Q5",0.105f},
-                                                {"S2Q2",0.202f},
-                                                {"S2Q4",0.204f},
-                                                {"S2Q5",0.205f},
-                                                {"S2Q7",0.207f},
-                                                {"S3Q1",0.301f},
-                                                {"S3Q3",0.303f},
-                                                {"S3Q7",0.307f}
+                                                {"A-S1Q2-1",0.08634999f},   //1
+                                                {"A-S1Q2-2",0.06069309f},   //2
+                                                {"A-S1Q3-1",0.1052488f},    //3
+                                                {"A-S1Q5-1",0.07404505f},   //4
+                                                {"A-S1Q5-2",0.07472095f},   //5
+                                                {"A-S2Q2-1",0.1136913f},    //6
+                                                {"A-S2Q2-2",0.05479072f},   //7
+                                                {"A-S2Q4-1",0.1093581f},    //8
+                                                {"A-S2Q5-1",0.05962122f},   //9
+                                                {"A-S2Q5-2",0.0945046f},    //10
+                                                {"A-S2Q7-1",0.1041755f},    //11
+                                                {"A-S2Q7-2",0.1041755f},    //12
+                                                {"A-S3Q1-1",0.09660008f},   //13
+                                                {"A-S3Q1-2",0.08437824f},   //14
+                                                {"A-S3Q1-3",0.06586192f},   //15
+                                                {"A-S3Q3-1",0.1216932f},    //16
+                                                {"A-S3Q3-2",0.1059386f},    //17
+                                                {"A-S3Q7-1",0.1011009f},    //18
+                                                {"A-S3Q7-2",0.07676713f}    //19
                                             };
         //offsets.Add(new KeyValuePair<string, float>("S1Q1", 0.102f));
 
@@ -616,26 +629,26 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 if (Archetype[10][0] - shoulderL.Position.X < -offset_X)
                 {
                     button_Left.Background = Brushes.LightGreen;
-                    if (!EMS1pause) SendEMSSignal("COM4", "0", intensity1, duration1);
-                    if (!EMS2pause) SendEMSSignal2("COM5", "1", intensity2, "1");
+                    if (!EMS1pause) SendEMSSignal("COM5", "1", intensity1, duration1);
+                    if (!EMS2pause) SendEMSSignal2("COM4", "1", intensity2, "1");
                 }
                 else if (Archetype[10][0] - shoulderL.Position.X > offset_X)
                 {
                     button_Right.Background = Brushes.LightGreen;
-                    if (!EMS1pause) SendEMSSignal("COM4", "1", intensity1, duration1);
-                    if (!EMS2pause) SendEMSSignal2("COM5", "1", intensity2, "1");
+                    if (!EMS1pause) SendEMSSignal("COM5", "0", intensity1, duration1);
+                    if (!EMS2pause) SendEMSSignal2("COM4", "1", intensity2, "1");
                 }
                 else  if (Archetype[10][1] - shoulderL.Position.Y < 0) // Secuential
                 {
                     button_Down.Background = Brushes.LightGreen;
-                    if (!EMS2pause) SendEMSSignal2("COM5", "1", intensity2, duration2);
-                    if (!EMS1pause) SendEMSSignal("COM4", "0", intensity1, "1");
+                    if (!EMS2pause) SendEMSSignal2("COM4", "1", intensity2, duration2);
+                    if (!EMS1pause) SendEMSSignal("COM5", "0", intensity1, "1");
                 }
                 else if (Archetype[10][1] - shoulderL.Position.Y > offset_Y)
                 {
                     button_Up.Background = Brushes.LightGreen;
-                    if (!EMS2pause) SendEMSSignal2("COM5", "0", intensity2, duration2);
-                    if (!EMS1pause) SendEMSSignal("COM4", "0", intensity1, "1");
+                    if (!EMS2pause) SendEMSSignal2("COM4", "0", intensity2, duration2);
+                    if (!EMS1pause) SendEMSSignal("COM5", "0", intensity1, "1");
                 } else
                 {
                     if (!EMS1pause) SendEMSSignal("COM4", "0", intensity1, "1");
@@ -1124,11 +1137,17 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 button1.Background = Brushes.LightGray;
                 EMS1pause = true;
                 Console.WriteLine("[" + getTime() + "] EMS1 OFF ");
+                //button1_Copy1.Background = Brushes.LightGray;
+                //EMS2pause = true;
+                //Console.WriteLine("[" + getTime() + "] EMS2 OFF ");
             } else
             {
                 button1.Background = Brushes.LightGreen;
                 EMS1pause = false;
                 Console.WriteLine("[" + getTime() + "] EMS1 ON ");
+                //button1_Copy1.Background = Brushes.LightGreen;
+                //EMS2pause = false;
+                //Console.WriteLine("[" + getTime() + "] EMS2 ON ");
             }
         }
 
@@ -1139,12 +1158,18 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 button1_Copy1.Background = Brushes.LightGray;
                 EMS2pause = true;
                 Console.WriteLine("[" + getTime() + "] EMS2 OFF ");
+                //button1.Background = Brushes.LightGray;
+                //EMS1pause = true;
+                //Console.WriteLine("[" + getTime() + "] EMS1 OFF ");
             }
             else
             {
                 button1_Copy1.Background = Brushes.LightGreen;
                 EMS2pause = false;
                 Console.WriteLine("[" + getTime() + "] EMS2 ON ");
+                //button1.Background = Brushes.LightGreen;
+                //EMS1pause = false;
+                //Console.WriteLine("[" + getTime() + "] EMS1 ON ");
             }
         }
 
@@ -1182,7 +1207,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             // TODO FUNCTIONALITY 1: CHANGE SKELETON DATA
             //if (skeletonIndex > 0) skeletonIndex -= 1;
             //else skeletonIndex = skeletonArray.Length - 1;
-            if (skeletonIndex < 9) // HARDCODED. QUICK FIX
+            if (skeletonIndex < 19) // HARDCODED. QUICK FIX
             {
                 skeletonIndex++;
                 Console.WriteLine("[" + getTime() + "] Current task " + skeletonArray[videoIndex][skeletonIndex]);
@@ -1203,20 +1228,31 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
         private void button_Up_Copy_Click(object sender, RoutedEventArgs e)
         {
+            /* OLD BEHAVIOUR
             videoIndex = 0;
             skeletonIndex = 0;
+            */
+            
         }
 
         private void button_Up_Copy1_Click(object sender, RoutedEventArgs e)
         {
-            videoIndex = 1;
-            skeletonIndex = 0;
+            /*
+                videoIndex = 1;
+                skeletonIndex = 0;
+            */
+            height_adjustment = height_adjustment + 0.05f;
+            button_Up_Copy.Content = height_adjustment;
         }
 
         private void button_Up_Copy2_Click(object sender, RoutedEventArgs e)
         {
-            videoIndex = 2;
-            skeletonIndex = 0;
+            /*
+             videoIndex = 2;
+             skeletonIndex = 0;
+             */
+            height_adjustment = height_adjustment - 0.05f;
+            button_Up_Copy.Content = height_adjustment;
         }
 
         private void button_Down_Copy_Click(object sender, RoutedEventArgs e)

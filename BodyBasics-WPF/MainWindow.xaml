@@ -88,7 +88,7 @@
             Background="LightGray"
             Foreground = "DarkBlue"/>
         <Button x:Name = "button_Up_Copy"  
-            Content = "V1" 
+            Content = "0.00" 
             ClickMode = "Press" 
             Margin = "182,0,462.6,0.2"  
             Width = "29"  
@@ -96,7 +96,7 @@
             Background="LightGray"
             Foreground = "DarkBlue" Click="button_Up_Copy_Click"/>
         <Button x:Name = "button_Up_Copy1"  
-            Content = "V2" 
+            Content = "+" 
             ClickMode = "Press" 
             Margin = "216,0,428.6,0.2"  
             Width = "29"  
@@ -104,7 +104,7 @@
             Background="LightGray"
             Foreground = "DarkBlue" Click="button_Up_Copy1_Click"/>
         <Button x:Name = "button_Up_Copy2"  
-            Content = "V3" 
+            Content = "-" 
             ClickMode = "Press" 
             Margin = "250,0,394.6,0.2"  
             Width = "29"  
